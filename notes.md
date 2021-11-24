@@ -245,10 +245,122 @@ void bfs(int node){
 
 ***Example***
 Leetcode 743:Network delay time
+O(ElogV)
+class Solution {
+    List<int[]>[] graph;
+    public int networkDelayTime(int[][] times, int n, int k) {
+        List<int[]>[] graph = new LinkedList[n+1];
+        for(int i = 1; i <= n; i++){
+            graph[i] = new LinkedList<>();
+        }
+        for(int[] time:times){
+            graph[time[0]].add(new int[]{time[1], time[2]});
+        }
+        
+        int[] dist = new int[n+1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        int[] parent = new int[n+1];
+        dist[k] = 0;
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a,b)->
+            Integer.compare(a[1],b[1]));
+        pq.offer(new int[]{k, 0});
+        while(!pq.isEmpty()){
+            int[] cur = pq.poll();
+            int node = cur[0];
+            int cost = cur[1];
+            for(int[] nei:graph[node]){
+                if(dist[nei[0]] > nei[1] + cost){
+                    dist[nei[0]] = nei[1] + cost;
+                    parent[nei[0]] = node;
+                    pq.offer(new int[]{nei[0], dist[nei[0]]});
+                }
+            }
+            
+        }
+        
+        int max = 0;
+        for(int i = 1; i <= n; i++){
+            if(dist[i] == Integer.MAX_VALUE){
+                return -1;
+            }
+            max = Math.max(max, dist[i]);
+        }
+        return max;
 
+    }
+    
+    
+}
 
+***Leetcode 505*** Maze II
+class Solution {
+    int[][] dirs = {{0,1},{0,-1},{-1,0},{1,0}};
+    int m;
+    int n;
+    public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+        m = maze.length;
+        n = maze[0].length;
+        int[][] distance = new int[m][n];
+        for(int[] row:distance){
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+        distance[start[0]][start[1]] = 0;
+        dijkstra(maze, start, distance);
+        return distance[destination[0]][destination[1]] == Integer.MAX_VALUE?-1:distance[destination[0]][destination[1]];
+        
+    }
+    
+    public void dijkstra(int[][] maze, int[] start, int[][] distance){
+        PriorityQueue<int[]> q = new PriorityQueue<>((a,b)->(a[2]-b[2]));
+        q.offer(new int[]{start[0], start[1],0});
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+            for(int[] dir:dirs){
+                int x = cur[0] + dir[0], y = cur[1] + dir[1], count = 0;
+                while(x >= 0 && y >= 0 && x < m && y < n && maze[x][y] == 0){
+                    x += dir[0];
+                    y += dir[1];
+                    count++;
+                }
+                x -= dir[0];
+                y -= dir[1];
+                if(distance[cur[0]][cur[1]] + count < distance[x][y]){
+                    distance[x][y] = distance[cur[0]][cur[1]] + count;
+                    q.add(new int[]{x, y, distance[x][y]});
+                }
+            }
+        }
+    }
+}
 
-
-
-
+***787 Cheapest flights within k stops***
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for(int[] flight:flights){
+            graph.computeIfAbsent(flight[0], value->new LinkedList<>()).add(new int[]{flight[1], flight[2]});
+        }
+        Map<Integer,Integer> visited = new HashMap<>();
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a, b) -> a[2] - b[2]); // dest, stops, cost
+        pq.offer(new int[]{src, k+1,0});
+        while(!pq.isEmpty()){
+            int[] cur = pq.poll();
+            int city = cur[0], stops = cur[1],cost = cur[2];
+            if(stops < 0) continue;
+            visited.put(city, stops);
+            if(city == dst) return cost;
+                List<int[]> nodes =graph.getOrDefault(city, new LinkedList<>());
+                           for(int[] node:nodes){
+                int neiCity = node[0];
+                int neiCost = node[1];
+                if(!visited.containsKey(neiCity) || stops > visited.get(neiCity)){
+                    pq.offer(new int[]{neiCity, stops-1, cost + neiCost});
+                }
+        }
+        }
+        return -1;
+   
+}
+}
 
