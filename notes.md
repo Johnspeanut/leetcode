@@ -364,3 +364,52 @@ class Solution {
 }
 }
 
+## BFS
+***LeetCode 37 Sudoko***
+class Solution {
+    public void solveSudoku(char[][] board) {
+        solve(board, 0, 0);
+    }
+    
+    public boolean solve(char[][] board, int row, int col){
+        if(row == 9){
+            return true;
+        }
+        if(col == 9){
+            return solve(board, row+1,0);
+        }
+        if(board[row][col] != '.'){
+            return solve(board, row, col+1);
+        }
+        for(char c = '1'; c <='9'; c++){
+            if(!isValid(board,row,col,c)){
+                continue;
+            }
+            board[row][col] = c;
+            if(solve(board, row, col+1)){
+                return true;
+            }
+            board[row][col] = '.';
+        }
+        return false;
+ 
+    }
+    
+    public boolean isValid(char[][] board, int i, int j, char c){
+        for(int row = 0; row < 9; row++){
+            if(board[row][j] == c) return false;
+        }
+        for(int col = 0; col < 9; col++){
+            if(board[i][col] == c) return false;
+        }
+        for(int row = (i/3)*3; row <(i/3)*3 + 3; row++){
+            for(int col = (j/3)*3; col < (j/3)*3 + 3; col++){
+                if(board[row][col] == c) return false;
+            }
+        }
+        return true;
+    }
+    
+}
+
+
