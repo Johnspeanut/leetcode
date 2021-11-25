@@ -372,7 +372,7 @@ class Solution {
     }
     
     public boolean solve(char[][] board, int row, int col){
-        if(row == 9){
+        if(row == 9){ // note it is 9 not 8
             return true;
         }
         if(col == 9){
@@ -412,4 +412,135 @@ class Solution {
     
 }
 
+***22 Generate valid parenthesis***
+class Solution {
+    List<String> result;
+    public List<String> generateParenthesis(int n) {
+        result = new LinkedList<>();
+        dfs(new StringBuilder(), n, n);
+        return result;
+        
+    }
+    
+    private void dfs(StringBuilder sb, int leftCount, int rightCount){
+        if(leftCount > rightCount){
+            return;
+        }
+        if(leftCount < 0 || rightCount <0){
+            return;
+        }
+        if(leftCount == 0 && leftCount == rightCount){
+            result.add(sb.toString());
+            return;
+        }
+        
+        sb.append('(');
+        dfs(sb, leftCount-1,rightCount);
+        sb.deleteCharAt(sb.length()-1);
+        
+        sb.append(')');
+        dfs(sb,leftCount, rightCount-1);
+        sb.deleteCharAt(sb.length()-1);
+        }
+    
+}
+
+## Trie
+***1804 Implement Trie***
+class Trie {
+    TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+        
+    }
+    
+    public void insert(String word) {
+        TrieNode node = root;
+        for(int i = 0; i < word.length(); i++){
+            char currentChar = word.charAt(i);
+            if(!node.containsKey(currentChar)){
+                node.put(currentChar, new TrieNode());
+            }
+            node = node.get(currentChar);
+            node.count++;
+        }
+        node.setEnd();
+        node.end++;
+        
+    }
+    
+    public int countWordsEqualTo(String word) {
+        TrieNode current = root;
+        int pos;
+        for(char ch:word.toCharArray()){
+            pos = ch-'a';
+            if(current.links[pos] == null){
+                return 0;
+            }
+            current = current.links[pos];
+        }
+        return current.end;
+        
+    }
+    
+    public int countWordsStartingWith(String prefix) {
+        TrieNode current = root;
+        int pos;
+        for(char ch:prefix.toCharArray()){
+            pos = ch -'a';
+            if(current.links[pos] == null){
+                return 0;
+            }
+            current = current.links[pos];
+        }
+        return current.count;
+        
+    }
+    
+    public void erase(String word) {
+        TrieNode current = root;
+        int pos;
+        for(char ch:word.toCharArray()){
+            pos = ch -'a';
+            current = current.links[pos];
+            current.count--;
+        }
+        current.end--;
+        
+    }
+    
+    class TrieNode{
+        TrieNode[] links;
+        int R = 26;
+        boolean isEnd;
+        int count;
+        int end;
+        public TrieNode(){
+            links = new TrieNode[R];
+        }
+        
+        public boolean containsKey(char ch){
+            return links[ch-'a'] != null;
+        }
+        
+        public TrieNode get(char ch){
+            return links[ch-'a'];
+        }
+        
+        public void put(char ch, TrieNode node){
+            links[ch-'a'] = node;
+        }
+        
+        
+        
+        public void setEnd(){
+            isEnd = true;
+        }
+        
+        public boolean isEnd(){
+            return isEnd;
+        }
+    }
+}
 
