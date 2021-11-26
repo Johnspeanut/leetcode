@@ -544,3 +544,182 @@ class Trie {
     }
 }
 
+***211 words data structrue***
+class WordDictionary {
+    TrieNode root;
+
+    public WordDictionary() {
+        root = new TrieNode();
+        
+    }
+    
+    public void addWord(String word) {
+        TrieNode curr = root;
+        for(char ch:word.toCharArray()){
+            if(curr.children[ch-'a'] == null){
+                curr.children[ch-'a'] = new TrieNode();
+            }
+            curr = curr.children[ch-'a'];
+        }
+        curr.isWord = true;
+    }
+    
+    public boolean search(String word) {
+        return helper(word,0,root);
+
+    }
+    
+    private boolean helper(String word, int pos, TrieNode node){
+        if(pos == word.length()) return node.isWord;
+        char ch = word.charAt(pos);
+        if(ch != '.'){
+            return node.children[ch-'a'] != null && helper(word, pos+1, node.children[ch-'a']);
+        }
+        
+        for(int i = 0; i <26; i++){
+            if(node.children[i] != null && helper(word,pos+1, node.children[i])){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    class TrieNode{
+        TrieNode[] children;
+        boolean isWord;
+        
+        public TrieNode(){
+            children = new TrieNode[26];
+        }
+    }
+}
+
+***421 Maximum XOR of two nums in an array***
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        int result = Integer.MIN_VALUE;
+        Trie trie = new Trie();
+        for(int num:nums){
+            trie.insert(num);
+        }
+        for(int num:nums){
+            result = Math.max(trie.findMaxXor(num), result);
+        }
+        return result;
+    }
+    
+}
+
+
+class TrieNode{
+    TrieNode[] childeren;
+    public TrieNode(){
+        childeren = new TrieNode[2];
+    }
+}
+
+class Trie{
+    TrieNode root;
+    public Trie(){
+        root = new TrieNode();
+    }
+    
+    public void insert(int num){
+        TrieNode curr = root;
+        for(int i = 31; i >= 0; i--){
+            int curBit = (num >> i)& 1;
+            if(curr.childeren[curBit] == null){
+                curr.childeren[curBit] = new TrieNode();
+            }
+            curr = curr.childeren[curBit];
+        }
+    }
+    
+    public int findMaxXor(int num){
+        TrieNode curr = root;
+        int sum = 0;
+        for(int i = 31; i >= 0; i--){
+            int curBit = (num >>i)&1;
+            int otherBit = curBit == 0?1:0;
+            if(curr.childeren[otherBit] == null){
+                curr = curr.childeren[curBit];
+            }else{
+                sum += (1 <<i);
+                curr = curr.childeren[otherBit];
+            }
+        }
+        return sum;
+    }
+}
+
+
+***140 WordBreak***
+class Solution {
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        String result = "";
+        Trie trie = new Trie();
+        for(String word:wordDict){
+            trie.insert(word);
+        }
+        
+        Set<String> res = new HashSet<>();
+        dfs(s,trie, 0, "", res);
+        return new ArrayList(res);
+        
+    }
+    
+    public void dfs(String s, Trie trie, int index,String ans, Set<String> res){
+        if(s.length() == index){
+            ans = ans.trim();
+            res.add(ans);
+            return;
+        }
+        for(int i = index + 1; i <= s.length(); i++){
+            String subString = s.substring(index, i);
+            if(trie.search(subString)){
+                dfs(s,trie,i,ans + " " + subString,res);
+            }
+        }
+
+    }
+    
+}
+
+class TrieNode{
+    TrieNode[] children;
+    boolean isWord;
+    
+    public TrieNode(){
+        children = new TrieNode[26];
+    }
+}
+
+class Trie{
+    TrieNode root;
+    
+    public Trie(){
+        root = new TrieNode();
+    }
+    
+    public void insert(String word){
+        TrieNode curr = root;
+        for(char ch:word.toCharArray()){
+            if(curr.children[ch-'a'] == null){
+                curr.children[ch-'a'] = new TrieNode();
+            }
+            curr = curr.children[ch-'a'];
+        }
+        curr.isWord = true;
+    }
+    
+    public boolean search(String word){
+        TrieNode curr = root;
+        for(char ch:word.toCharArray()){
+            if(curr.children[ch-'a'] == null){
+                return false;
+            }
+            curr = curr.children[ch-'a'];
+        }
+        return curr.isWord;
+    }
+}
